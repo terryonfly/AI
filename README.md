@@ -1,2 +1,2 @@
 # AI
-an AI program
+an AI program for natual knowledge
