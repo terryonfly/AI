@@ -3,7 +3,7 @@ project(AI)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-target_link_libraries(
+link_libraries(
 /usr/lib/mysql/plugin/adt_null.so
 /usr/lib/mysql/plugin/auth_test_plugin.so
 /usr/lib/mysql/plugin/mypluglib.so
