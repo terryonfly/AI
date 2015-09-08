@@ -11,10 +11,10 @@ include_directories(
     /usr/include/mysql
 )
 
-#link_libraries(
+link_libraries(
 #    adt_null.so
 #    auth_test_plugin.so
-#    mypluglib.so
+    mypluglib.so
 #    qa_auth_server.so
 #    auth.so
 #    ha_example.so
@@ -24,7 +24,7 @@ include_directories(
 #    libdaemon_example.so
 #    qa_auth_interface.so
 #    semisync_slave.so
-#)
+)
 
 set(SOURCE_FILES main.cpp)
 add_executable(AI ${SOURCE_FILES})
