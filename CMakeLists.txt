@@ -12,18 +12,7 @@ include_directories(
 )
 
 link_libraries(
-    libadt_null
-    libauth_test_plugin
-    libmypluglib
-    libqa_auth_server
-    libauth
-    libha_example
-    libqa_auth_client
-    libsemisync_master
-    libauth_socket
-    liblibdaemon_example
-    libqa_auth_interface
-    libsemisync_slave
+    mysqlclient
 )
 
 set(SOURCE_FILES main.cpp)
