@@ -1,21 +1,13 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(AI)
 
-MESSAGE(STSTUS "###################################")
-
-MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
-
-IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
-	MESSAGE(STATUS "current platform: Linux ")
-ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Windows")
-	MESSAGE(STATUS "current platform: Windows")
-ELSEIF (CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
-	MESSAGE(STATUS "current platform: FreeBSD")
-ELSE ()
-	MESSAGE(STATUS "other platform: ${CMAKE_SYSTEM_NAME}")
-ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
-
-MESSAGE(STSTUS "###################################")
+IF (WIN32)
+	MESSAGE(STATUS "Now is windows")
+ELSEIF (APPLE)
+	MESSAGE(STATUS "Now is Apple systens.")
+ELSEIF (UNIX)
+	MESSAGE(STATUS "Now is UNIX-like OS's. Including aPPLE os x  and CygWin")
+ENDIF ()
 
 ########## for linux ##########
 
