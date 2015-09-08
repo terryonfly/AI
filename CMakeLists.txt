@@ -4,7 +4,11 @@ project(AI)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 link_directories(
-/usr/lib/mysql/plugin/
+    /usr/lib/mysql/plugin
+)
+
+include_directories(
+    /usr/include/mysql
 )
 
 set(SOURCE_FILES main.cpp)
