@@ -1,35 +1,43 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(AI)
 
-IF (WIN32)
-	MESSAGE(STATUS "Now is windows")
-ELSEIF (APPLE)
-	MESSAGE(STATUS "Now is Apple systens.")
-ELSEIF (UNIX)
-	MESSAGE(STATUS "Now is UNIX-like OS's. Including aPPLE os x  and CygWin")
-ENDIF ()
+########## for windows ##########
+IF(WIN32)
+	MESSAGE(STATUS "At Windows OS")
 
-########## for linux ##########
+    include_directories(
+        #
+    )
 
-#include_directories(
-#    /usr/include/mysql
-#)
-#
-#link_directories(
-#
-#)
+    link_directories(
+        #
+    )
 
 ########## for mac ##########
+ELSEIF(APPLE)
+	MESSAGE(STATUS "At Mac OS")
 
-include_directories(
-    /usr/local/mysql-connector-c-6.1.6-osx10.8-x86_64/include
-)
+    include_directories(
+        /usr/local/mysql-connector-c-6.1.6-osx10.8-x86_64/include
+    )
 
-link_directories(
-    /usr/local/mysql-connector-c-6.1.6-osx10.8-x86_64/lib
-)
+    link_directories(
+        /usr/local/mysql-connector-c-6.1.6-osx10.8-x86_64/lib
+    )
 
-########## common ##########
+########## for linux ##########
+ELSEIF(UNIX)
+	MESSAGE(STATUS "At Linux OS")
+
+    include_directories(
+        /usr/include/mysql
+    )
+
+    link_directories(
+        #
+    )
+
+ENDIF()
 
 link_libraries(
     mysqlclient
