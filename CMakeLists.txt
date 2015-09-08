@@ -11,7 +11,7 @@ include_directories(
     /usr/include/mysql
 )
 
-target_link_libraries(
+link_libraries(
     adt_null.so
     auth_test_plugin.so
     mypluglib.so
