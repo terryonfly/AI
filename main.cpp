@@ -1,5 +1,5 @@
 #include <iostream>
-#include "/usr/include/mysql/mysql.h"
+#include "mysql/mysql.h"
 
 using namespace std;
 
