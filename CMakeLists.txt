@@ -3,9 +3,20 @@ project(AI)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-target_link_libraries(adt_null.so     auth_test_plugin.so   mypluglib.so          qa_auth_server.so
-                      auth.so         ha_example.so         qa_auth_client.so     semisync_master.so
-                      auth_socket.so  libdaemon_example.so  qa_auth_interface.so  semisync_slave.so)
+target_link_libraries(
+/usr/lib/mysql/plugin/adt_null.so
+/usr/lib/mysql/plugin/auth_test_plugin.so
+/usr/lib/mysql/plugin/mypluglib.so
+/usr/lib/mysql/plugin/qa_auth_server.so
+/usr/lib/mysql/plugin/auth.so
+/usr/lib/mysql/plugin/ha_example.so
+/usr/lib/mysql/plugin/qa_auth_client.so
+/usr/lib/mysql/plugin/semisync_master.so
+/usr/lib/mysql/plugin/auth_socket.so
+/usr/lib/mysql/plugin/libdaemon_example.so
+/usr/lib/mysql/plugin/qa_auth_interface.so
+/usr/lib/mysql/plugin/semisync_slave.so
+)
 
 set(SOURCE_FILES main.cpp)
 add_executable(AI ${SOURCE_FILES})
