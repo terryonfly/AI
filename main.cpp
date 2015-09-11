@@ -61,7 +61,7 @@ bool is_normal_zh_symbol(char a_char_0, char a_char_1, char a_char_2)
 
 void split_word(string sentence)
 {
-	printf("%s - %d\n", sentence.c_str(), sentence.length());
+	printf("%s - %d\n", sentence.c_str(), (int) sentence.length());
 }
 
 int main()
@@ -86,7 +86,7 @@ int main()
 	sprintf(data_path, "%s%s", path, "/data.txt");
 	printf("Reading file : %s\n", data_path);
 
-	signed char *read_buffer = (signed char *)malloc(409600);
+	char *read_buffer = (char *)malloc(409600);
 	int fd;
 	fd = open(data_path, O_RDWR | O_CREAT, S_IRWXU);
 	read(fd, read_buffer, 409600);
@@ -95,8 +95,8 @@ int main()
 	int i = 0;
 	string sentence = "";
 	while (read_buffer[i] != 0x00) {
-		if (read_buffer[i] < 0) {
-			signed char zh_char[3] = {read_buffer[i++], read_buffer[i++], read_buffer[i++]};
+		if ((signed)read_buffer[i] < 0) {
+			char zh_char[3] = {read_buffer[i++], read_buffer[i++], read_buffer[i++]};
 			if (is_end_zh_symbol(zh_char[0], zh_char[1], zh_char[2])) {
 //				printf("ze - %c%c%c\n", zh_char[0], zh_char[1], zh_char[2]);
 				if (!sentence.empty()) {
@@ -110,7 +110,7 @@ int main()
 				sentence = sentence.append({zh_char[0], zh_char[1], zh_char[2]});
 			}
 		} else {
-			signed char en_char = read_buffer[i++];
+			char en_char = read_buffer[i++];
 			if (is_end_en_symbol(en_char)) {
 //				printf("ce - %c\n", en_char);
 				if (!sentence.empty()) {
