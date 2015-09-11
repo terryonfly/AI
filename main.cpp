@@ -101,6 +101,7 @@ int main()
 					split_word(sentence);
 				}
 				sentence = "";
+				printf("x -- %d\n", sentence.length());
 			} else if (is_normal_zh_symbol(zh_char[0], zh_char[1], zh_char[2])) {
 //				printf("zn - %c%c%c\n", zh_char[0], zh_char[1], zh_char[2]);
 			} else {
@@ -114,6 +115,8 @@ int main()
 				if (!sentence.empty()) {
 					split_word(sentence);
 				}
+				sentence = "";
+				printf("y -- %d\n", sentence.length());
 			} else if (is_normal_en_symbol(en_char)) {
 //				printf("cn - %c\n", en_char);
 			} else {
