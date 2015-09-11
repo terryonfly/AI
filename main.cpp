@@ -40,9 +40,16 @@ bool is_end_zh_symbol(char a_char_0, char a_char_1, char a_char_2)
 {
 	string a_char({a_char_0, a_char_1, a_char_2});
 	int i = 0;
-	for (i = 0; i < get_array_len(end_zh_symbol); i ++)
-		if (strcmp(a_char.c_str(), end_zh_symbol[i].c_str()) == 0)
+	for (i = 0; i < get_array_len(end_zh_symbol); i ++) {
+		printf("%s + %s + %x + %x\n", a_char.c_str(), end_zh_symbol[i].c_str(), a_char_0, end_zh_symbol[i].c_str()[0]);
+//		if (a_char_0 == end_zh_symbol[i].c_str()[0] &&
+//			a_char_1 == end_zh_symbol[i].c_str()[1] &&
+//			a_char_2 == end_zh_symbol[i].c_str()[2]) {
+		if (a_char == end_zh_symbol[i]) {
+			printf("=======");
 			return true;
+		}
+	}
 	return false;
 }
 
