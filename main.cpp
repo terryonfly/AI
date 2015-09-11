@@ -1,11 +1,8 @@
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
-#include <codecvt>
 #include "mysql.h"
 #include "string.h"
-#include <iomanip>
-#include <type_traits>
 
 using namespace std;
 
