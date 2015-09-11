@@ -41,7 +41,7 @@ bool is_end_zh_symbol(char a_char_0, char a_char_1, char a_char_2)
 	string a_char({a_char_0, a_char_1, a_char_2});
 	int i = 0;
 	for (i = 0; i < get_array_len(end_zh_symbol); i ++)
-		if (a_char == end_zh_symbol[i])
+		if (strcmp(a_char.c_str(), end_zh_symbol[i].c_str()) == 0)
 			return true;
 	return false;
 }
@@ -51,7 +51,7 @@ bool is_normal_zh_symbol(char a_char_0, char a_char_1, char a_char_2)
 	string a_char({a_char_0, a_char_1, a_char_2});
 	int i = 0;
 	for (i = 0; i < get_array_len(normal_zh_symbol); i ++) {
-		if (a_char == normal_zh_symbol[i])
+		if (strcmp(a_char.c_str(), normal_zh_symbol[i].c_str()) == 0)
 			return true;
 	}
 	return false;
@@ -59,7 +59,7 @@ bool is_normal_zh_symbol(char a_char_0, char a_char_1, char a_char_2)
 
 void split_word(string sentence)
 {
-	printf("%s - %d\n", sentence.c_str(), sentence.length());
+	printf("%s - %lu\n", sentence.c_str(), sentence.length());
 }
 
 int main()
@@ -101,7 +101,7 @@ int main()
 					split_word(sentence);
 				}
 				sentence = "";
-				printf("x -- %d\n", sentence.length());
+				printf("x -- %lu\n", sentence.length());
 			} else if (is_normal_zh_symbol(zh_char[0], zh_char[1], zh_char[2])) {
 //				printf("zn - %c%c%c\n", zh_char[0], zh_char[1], zh_char[2]);
 			} else {
@@ -116,7 +116,7 @@ int main()
 					split_word(sentence);
 				}
 				sentence = "";
-				printf("y -- %d\n", sentence.length());
+				printf("y -- %lu\n", sentence.length());
 			} else if (is_normal_en_symbol(en_char)) {
 //				printf("cn - %c\n", en_char);
 			} else {
