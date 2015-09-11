@@ -59,7 +59,7 @@ bool is_normal_zh_symbol(char a_char_0, char a_char_1, char a_char_2)
 
 void split_word(string sentence)
 {
-	printf("%s\n", sentence.c_str());
+	printf("%s - %d\n", sentence.c_str(), sentence.length());
 }
 
 int main()
