@@ -133,7 +133,7 @@ vector<sentence *> split_word(utfstring *utfstr)
 sentence *get_best_sentence(utfstring *utfstr)
 {
 	vector<sentence *> sentences = split_word(utfstr);
-	printf("has split %lu sentences\n", sentences.size());
+	printf("has split %d sentences\n", (int) sentences.size());
 	for (int i = 0; i < sentences.size(); i++) {
 		printf("%s\n", sentences[i]->c_str());
 	}

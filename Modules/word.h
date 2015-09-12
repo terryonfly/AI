@@ -5,8 +5,10 @@
 #ifndef AI_WORD_H
 #define AI_WORD_H
 
-
 #include "utfstring.h"
+#include <string>
+
+using namespace std;
 
 class word {
 

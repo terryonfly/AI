@@ -7,6 +7,7 @@
 
 #include <vector>
 #include "word.h"
+#include <string>
 
 using namespace std;
 

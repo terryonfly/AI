@@ -4,6 +4,8 @@
 
 #include "word.h"
 
+using namespace std;
+
 word::word(utfstring *a_utfword)
 {
     utfword = a_utfword;
