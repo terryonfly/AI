@@ -9,8 +9,7 @@
 using namespace std;
 
 MYSQL mysql;
-//const char *host = "robot.mokfc.com";
-const char *host = "localhost";
+const char *host = "robot.mokfc.com";
 const char *user = "root";
 const char *pwd = "513939";
 char query_buf[1024];
@@ -95,7 +94,7 @@ vector<sentence *> split_word(utfstring *utfstr)
 {
 	vector<sentence *> sentences;
 	bool is_single_word = true;
-	for (int len = utfstr->length(); len > 0; len--) {
+	for (int len = (utfstr->length() > 8) ? 8 : utfstr->length(); len > 0; len--) {
 		utfstring *first_utfword = utfstr->substring(0, len);
 		word *first_word = NULL;
 		if (len == 1) {
