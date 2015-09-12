@@ -46,4 +46,4 @@ link_libraries(
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES main.cpp)
-add_executable(AI ${SOURCE_FILES})
+add_executable(AI ${SOURCE_FILES} Modules/string_convert.h Modules/string_convert.cpp Modules/word.cpp Modules/word.h Modules/sentence.cpp Modules/sentence.h Modules/utfstring.cpp Modules/utfstring.h)
