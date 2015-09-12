@@ -47,7 +47,7 @@ utfstring *utfstring::substring(int begin, int length)
     utfstring *substring = new utfstring();
     for (int i = begin; i < begin + length; i++) {
         if (i >= utfchars.size()) {
-            fprintf(stderr, "get substring out of range [%d, %d] in len = %lu\n", begin, length, utfchars.size());
+            fprintf(stderr, "get substring out of range [%d, %d] in len = %d\n", begin, length, (int) utfchars.size());
             break;
         }
         substring->append(utfchars[i]);
@@ -64,7 +64,7 @@ utfstring *utfstring::at(int index)
 {
     utfstring *str = new utfstring();
     if (index >= utfchars.size()) {
-        fprintf(stderr, "get index out of range %d in len = %lu\n", index, utfchars.size());
+        fprintf(stderr, "get index out of range %d in len = %d\n", index, (int) utfchars.size());
         return str;
     }
     str->append(utfchars[index]);
