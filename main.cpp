@@ -67,10 +67,10 @@ bool is_normal_zh_symbol(char a_char_0, char a_char_1, char a_char_2)
 	return false;
 }
 
-word *check_word(utfstring *utfword)
+word *check_word(utfstring *utfword, )
 {
 	mysql_select_db(&mysql, "corpus");
-	sprintf(query_buf,"select * from word where word.word = '%s' limit 1;",utfword->c_str());
+	sprintf(query_buf,"select * from word_sogou where word_sogou.word = '%s' limit 1;",utfword->c_str());
 	if(mysql_query(&mysql,query_buf)) {
 		fprintf(stderr, "Query failed (%s)\n",mysql_error(&mysql));
 		return NULL;
