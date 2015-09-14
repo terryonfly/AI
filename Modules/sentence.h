@@ -29,6 +29,8 @@ public:
 
     const char *c_str();
 
+    double get_score();
+
 };
 
 

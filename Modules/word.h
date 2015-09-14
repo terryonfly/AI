@@ -16,13 +16,17 @@ public:
 
     utfstring *utfword;
 
-    char *type;
+    char *word_type;
+
+    bool is_new_char;
+
+    double word_probability;
 
 public:
 
     word(utfstring *a_utfword);
 
-    word(utfstring *a_utfword, char *a_type);
+    word(utfstring *a_utfword, char *a_word_type, double a_word_probability);
 
     ~word();
 

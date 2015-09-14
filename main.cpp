@@ -67,10 +67,10 @@ bool is_normal_zh_symbol(char a_char_0, char a_char_1, char a_char_2)
 	return false;
 }
 
-word *check_word(utfstring *utfword)
+word *check_word(utfstring *utfword, const char *table)
 {
 	mysql_select_db(&mysql, "corpus");
-	sprintf(query_buf,"select * from word_sogou where word_sogou.word = '%s' limit 1;",utfword->c_str());
+	sprintf(query_buf,"select * from %s where %s.word = '%s' limit 1;", table, table, utfword->c_str());
 	if(mysql_query(&mysql,query_buf)) {
 		fprintf(stderr, "Query failed (%s)\n",mysql_error(&mysql));
 		return NULL;
@@ -83,8 +83,13 @@ word *check_word(utfstring *utfword)
 	MYSQL_ROW row;
 	word *sword = NULL;
 	while ((row = mysql_fetch_row(res))) {
-		printf("row[1][2] = %s, %s\n", row[1], row[2]);
-		sword = new word(utfword, row[2]);
+		char *szOrbits = row[4];
+		char* pEnd;
+		double probability;
+		probability = strtold(szOrbits, &pEnd);
+		char *word_type = row[2];
+//		printf("row[1][2] = %s, %s, %g\n", row[1], row[2], probability);
+		sword = new word(utfword, word_type, probability);
 	}
 	mysql_free_result(res);
 	return sword;
@@ -97,17 +102,27 @@ vector<sentence *> split_word(utfstring *utfstr)
 	for (int len = (utfstr->length() > 8) ? 8 : utfstr->length(); len > 0; len--) {
 		utfstring *first_utfword = utfstr->substring(0, len);
 		word *first_word = NULL;
-		if (len == 1) {
-			if (is_single_word) {
-//				printf("single - %s\n", first_utfword->c_str());
-				first_word = new word(first_utfword);
-			}
+		if (!first_word)
+			first_word = check_word(first_utfword, "word_sogou");
+		if (!first_word) {
+			first_word = check_word(first_utfword, "word_cn");
 		} else {
-			first_word = check_word(first_utfword);
-			if (first_word) {
-//				printf("mutil - %s\n", first_utfword->c_str());
-				is_single_word = false;
+			if (strcmp(first_word->word_type,"|") == 0) {
+				printf("finding word type in word_cn -- ");
+				word *pre_first_word = check_word(first_utfword, "word_cn");
+				if (pre_first_word) {
+					printf("successed\n");
+					first_word = pre_first_word;
+				} else {
+					printf("failed\n");
+				}
 			}
+		}
+		if (!first_word && len == 1)
+			first_word = check_word(first_utfword, "char_cn");
+		if (!first_word && len == 1) {
+			first_word = new word(first_utfword);
+			first_word->is_new_char = true;
 		}
 		if (first_word) {
 			if (utfstr->length() == len) {// Im the last word
@@ -133,10 +148,27 @@ sentence *get_best_sentence(utfstring *utfstr)
 {
 	vector<sentence *> sentences = split_word(utfstr);
 	printf("has split %d sentences\n", (int) sentences.size());
+	sentence *best_sentence = NULL;
 	for (int i = 0; i < sentences.size(); i++) {
-		printf("%s\n", sentences[i]->c_str());
+//		printf("- %s\n", sentences[i]->c_str());
+		if (!best_sentence) {
+			best_sentence = sentences[i];
+		} else {
+			if (best_sentence->get_score() < sentences[i]->get_score()) {
+				best_sentence = sentences[i];
+			}
+		}
 	}
-	return NULL;
+	return best_sentence;
+}
+
+void use_sentence(utfstring *utfstr)
+{
+	sentence *best_sentence = get_best_sentence(utfstr);
+	printf("===========best===========\n");
+	printf("- %s\n", best_sentence->c_str());
+	printf("==========update==========\n");
+
 }
 
 int main()
@@ -171,7 +203,7 @@ int main()
 			if (is_end_zh_symbol(zh_char[0], zh_char[1], zh_char[2])) {
 				if (!sentence.empty()) {
 					utfstring *utfstr = new utfstring(sentence.c_str());
-					get_best_sentence(utfstr);
+					use_sentence(utfstr);
 					delete(utfstr);
 				}
 				sentence = "";
@@ -185,7 +217,7 @@ int main()
 			if (is_end_en_symbol(en_char)) {
 				if (!sentence.empty()) {
 					utfstring *utfstr = new utfstring(sentence.c_str());
-					get_best_sentence(utfstr);
+					use_sentence(utfstr);
 					delete(utfstr);
 				}
 				sentence = "";
@@ -198,7 +230,7 @@ int main()
 	}
 	if (!sentence.empty()) {
 		utfstring *utfstr = new utfstring(sentence.c_str());
-		get_best_sentence(utfstr);
+		use_sentence(utfstr);
 		delete(utfstr);
 	}
 

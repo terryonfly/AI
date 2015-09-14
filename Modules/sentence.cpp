@@ -33,9 +33,19 @@ const char *sentence::c_str()
     string *cstr = new string();
     for (int i = 0; i < words.size(); i++) {
         cstr->append(words[i]->utfword->c_str());
-//        cstr->append("/");
-//        cstr->append(words[i]->type);
+        if (words[i]->is_new_char)
+            cstr->append("*");
+        cstr->append(words[i]->word_type);
         cstr->append(" ");
     }
     return cstr->c_str();
+}
+
+double sentence::get_score()
+{
+    double score = 1.0;
+    for (int i = 0; i < words.size(); i++) {
+        if (words[i]->word_probability > 0) score *= words[i]->word_probability;
+    }
+    return score;
 }
