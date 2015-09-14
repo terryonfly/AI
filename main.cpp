@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include "mysql.h"
 #include <vector>
+#include <cstring>
 #include "Modules/utfstring.h"
 #include "Modules/sentence.h"
 
