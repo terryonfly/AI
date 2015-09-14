@@ -112,10 +112,10 @@ vector<sentence *> split_word(utfstring *utfstr)
 				printf("finding word type in word_cn -- ");
 				word *pre_first_word = check_word(first_utfword, "word_cn");
 				if (pre_first_word) {
-					printf("successed\n");
+					printf("found\n");
 					first_word = pre_first_word;
 				} else {
-					printf("failed\n");
+					printf("not found\n");
 				}
 			}
 		}
