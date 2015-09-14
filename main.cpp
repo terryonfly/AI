@@ -149,9 +149,9 @@ vector<sentence *> split_word(utfstring *utfstr)
 
 sentence *get_best_sentence(utfstring *utfstr)
 {
-	printf("==============================\n");
+	printf("==============================\n\n");
 	printf("Checking : %s\n", utfstr->c_str());
-	printf("Checking");
+	printf("Proccessing");
 	fflush(stdout);
 	vector<sentence *> sentences = split_word(utfstr);
 	printf("\n");
