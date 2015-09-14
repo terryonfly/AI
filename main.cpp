@@ -70,6 +70,8 @@ bool is_normal_zh_symbol(char a_char_0, char a_char_1, char a_char_2)
 
 word *check_word(utfstring *utfword, const char *table)
 {
+	printf(".");
+	fflush(stdout);
 	mysql_select_db(&mysql, "corpus");
 	sprintf(query_buf,"select * from %s where %s.word = '%s' limit 1;", table, table, utfword->c_str());
 	if(mysql_query(&mysql,query_buf)) {
@@ -147,7 +149,10 @@ vector<sentence *> split_word(utfstring *utfstr)
 
 sentence *get_best_sentence(utfstring *utfstr)
 {
+	printf("Checking");
+	fflush(stdout);
 	vector<sentence *> sentences = split_word(utfstr);
+	printf("\n");
 //	printf("has split %d sentences\n", (int) sentences.size());
 	sentence *best_sentence = NULL;
 	for (int i = 0; i < sentences.size(); i++) {
@@ -191,7 +196,7 @@ void feedback_word(word *update_word)
 			fprintf(stderr, "Update failed (%s)\n",mysql_error(&mysql));
 			return;
 		}
-		printf("Updated \"%s\" %s\n", update_word->utfword->c_str(), update_word->word_type);
+		printf("Inserted \"%s\" %s\n", update_word->utfword->c_str(), update_word->word_type);
 //		printf("Insert %d rows\n",(int)mysql_affected_rows(&mysql));
 	}
 	mysql_free_result(res);
@@ -209,11 +214,12 @@ void feedback_sentence(sentence *best_sentence)
 void use_sentence(utfstring *utfstr)
 {
 	sentence *best_sentence = get_best_sentence(utfstr);
-	printf("========== best ==========\n");
-	printf("- %s\n", best_sentence->c_str());
-	printf("======== feedback ========\n");
+//	printf("======== sentence ========\n");
+	printf("%s\n", best_sentence->c_str());
+//	printf("======== feedback ========\n");
 	feedback_sentence(best_sentence);
-	printf("==========================\n");
+//	printf("==========================\n");
+	printf("\n");
 }
 
 int main()
@@ -234,10 +240,10 @@ int main()
 	sprintf(data_path, "%s%s", path, "/data.txt");
 	printf("Reading file : %s\n", data_path);
 
-	char *read_buffer = (char *)malloc(409600);
+	char *read_buffer = (char *)malloc(11664761);
 	int fd;
 	fd = open(data_path, O_RDWR | O_CREAT, S_IRWXU);
-	read(fd, read_buffer, 409600);
+	read(fd, read_buffer, 11664761);
 //	printf("Readed : %s\n", read_buffer);
 
 	int i = 0;
