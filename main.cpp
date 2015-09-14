@@ -109,13 +109,13 @@ vector<sentence *> split_word(utfstring *utfstr)
 			first_word = check_word(first_utfword, "word_cn");
 		} else {
 			if (strcmp(first_word->word_type,"|") == 0) {
-				printf("finding word type in word_cn -- ");
+//				printf("finding word type in word_cn -- ");
 				word *pre_first_word = check_word(first_utfword, "word_cn");
 				if (pre_first_word) {
-					printf("found\n");
+//					printf("found\n");
 					first_word = pre_first_word;
 				} else {
-					printf("not found\n");
+//					printf("not found\n");
 				}
 			}
 		}
@@ -148,7 +148,7 @@ vector<sentence *> split_word(utfstring *utfstr)
 sentence *get_best_sentence(utfstring *utfstr)
 {
 	vector<sentence *> sentences = split_word(utfstr);
-	printf("has split %d sentences\n", (int) sentences.size());
+//	printf("has split %d sentences\n", (int) sentences.size());
 	sentence *best_sentence = NULL;
 	for (int i = 0; i < sentences.size(); i++) {
 //		printf("- %s\n", sentences[i]->c_str());
@@ -163,13 +163,57 @@ sentence *get_best_sentence(utfstring *utfstr)
 	return best_sentence;
 }
 
+void feedback_word(word *update_word)
+{
+	mysql_select_db(&mysql, "corpus");
+	sprintf(query_buf,"select * from word where word.word = '%s' limit 1;", update_word->utfword->c_str());
+	if(mysql_query(&mysql,query_buf)) {
+		fprintf(stderr, "Query failed (%s)\n",mysql_error(&mysql));
+		return;
+	}
+	MYSQL_RES *res;
+	if (!(res = mysql_store_result(&mysql))) {
+		fprintf(stderr, "Couldn't get result from %s\n", mysql_error(&mysql));
+		return;
+	}
+	MYSQL_ROW row;
+	if ((row = mysql_fetch_row(res))) {// update
+		sprintf(query_buf,"update `corpus`.`word` set `word`.`repeat` = (`word`.`repeat`+1) where `word`='%s' limit 1;", update_word->utfword->c_str());
+		if(mysql_query(&mysql,query_buf)) {
+			fprintf(stderr, "Update failed (%s)\n",mysql_error(&mysql));
+			return;
+		}
+		printf("Updated \"%s\" %s\n", update_word->utfword->c_str(), update_word->word_type);
+//		printf("Update %d rows\n",(int)mysql_affected_rows(&mysql));
+	} else {// insert
+		sprintf(query_buf,"insert into `corpus`.`word` values(NULL, '%s', '%s', 1, 0.00000000000000000000001);", update_word->utfword->c_str(), update_word->word_type);
+		if(mysql_query(&mysql,query_buf)) {
+			fprintf(stderr, "Update failed (%s)\n",mysql_error(&mysql));
+			return;
+		}
+		printf("Updated \"%s\" %s\n", update_word->utfword->c_str(), update_word->word_type);
+//		printf("Insert %d rows\n",(int)mysql_affected_rows(&mysql));
+	}
+	mysql_free_result(res);
+}
+
+void feedback_sentence(sentence *best_sentence)
+{
+	word *update_word;
+	for (int i = 0; i < best_sentence->length(); i++) {
+		update_word = best_sentence->at(i);
+		feedback_word(update_word);
+	}
+}
+
 void use_sentence(utfstring *utfstr)
 {
 	sentence *best_sentence = get_best_sentence(utfstr);
-	printf("===========best===========\n");
+	printf("========== best ==========\n");
 	printf("- %s\n", best_sentence->c_str());
-	printf("==========update==========\n");
-
+	printf("======== feedback ========\n");
+	feedback_sentence(best_sentence);
+	printf("==========================\n");
 }
 
 int main()

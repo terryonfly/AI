@@ -28,14 +28,27 @@ void sentence::add_sentence(sentence *a_sentence)
     }
 }
 
+unsigned long sentence::length()
+{
+    return (int)words.size();
+}
+
+word *sentence::at(int index)
+{
+    if (index >= length()) {
+        return NULL;
+    }
+    return words[index];
+}
+
 const char *sentence::c_str()
 {
     string *cstr = new string();
     for (int i = 0; i < words.size(); i++) {
         cstr->append(words[i]->utfword->c_str());
-        if (words[i]->is_new_char)
-            cstr->append("*");
-        cstr->append(words[i]->word_type);
+//        if (words[i]->is_new_char)
+//            cstr->append("*");
+//        cstr->append(words[i]->word_type);
         cstr->append(" ");
     }
     return cstr->c_str();

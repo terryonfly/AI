@@ -27,6 +27,10 @@ public:
 
     void add_sentence(sentence *a_sentence);
 
+    unsigned long length();
+
+    word *at(int index);
+
     const char *c_str();
 
     double get_score();
