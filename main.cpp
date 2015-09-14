@@ -262,7 +262,7 @@ int main()
 			if (is_end_en_symbol(en_char)) {
 				if (!sentence.empty()) {
 					utfstring *utfstr = new utfstring(sentence.c_str());
-					use_sentence(utfstr);
+//					use_sentence(utfstr);
 					delete(utfstr);
 				}
 				sentence = "";
