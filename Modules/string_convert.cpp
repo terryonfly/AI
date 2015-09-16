@@ -21,6 +21,7 @@ int enc_get_utf8_size(const unsigned char pInput)
     if(c>=0xF0 && c<0xF8) return 4;
     if(c>=0xF8 && c<0xFC) return 5;
     if(c>=0xFC) return 6;
+    return 0;
 }
 
 // #c---

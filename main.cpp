@@ -4,6 +4,7 @@
 #include "mysql.h"
 #include <vector>
 #include <cstring>
+#include <map>
 #include "Modules/utfstring.h"
 #include "Modules/sentence.h"
 
@@ -20,6 +21,8 @@ char normal_en_symbol[] = {' ','!','\\','*','(',')','-','_','+','=','{','}','[',
 
 string end_zh_symbol[] = {"。","，","：","；","！","？"};
 string normal_zh_symbol[] = {"　","。","，","：","；","！","？","～","@","#","￥","%","……","（","）","——","｛","｝","【","】","“","”","‘","’","《","》","、","`"};
+
+map<string, word *> word_map;
 
 template <class T>
 int get_array_len(T& array)
@@ -75,12 +78,12 @@ word *check_word(utfstring *utfword, const char *table)
 	mysql_select_db(&mysql, "corpus");
 	sprintf(query_buf,"select * from %s where %s.word = '%s' limit 1;", table, table, utfword->c_str());
 	if(mysql_query(&mysql,query_buf)) {
-		fprintf(stderr, "Query failed (%s)\n",mysql_error(&mysql));
+		fprintf(stderr, "check_word : Query failed (%s)\n", mysql_error(&mysql));
 		return NULL;
 	}
 	MYSQL_RES *res;
 	if (!(res = mysql_store_result(&mysql))) {
-		fprintf(stderr, "Couldn't get result from %s\n", mysql_error(&mysql));
+		fprintf(stderr, "check_word : Couldn't get result from %s\n", mysql_error(&mysql));
 		return NULL;
 	}
 	MYSQL_ROW row;
@@ -95,7 +98,34 @@ word *check_word(utfstring *utfword, const char *table)
 		sword = new word(utfword, word_type, probability);
 	}
 	mysql_free_result(res);
+	if (!sword) word_map[utfword->c_str()] = sword;
 	return sword;
+}
+
+void add_word_to_cache(utfstring *utfword, word *a_word)
+{
+	string key(utfword->c_str());
+	if (a_word) {
+		word *value = new word(a_word->utfword, a_word->word_type, a_word->word_probability);
+		word_map[key] = value;
+	} else {
+		word_map[key] = NULL;
+	}
+}
+
+word *search_word_from_cache(utfstring *utfword)
+{
+	map<string, word *>::iterator word_map_iter;
+	string key(utfword->c_str());
+	word_map_iter = word_map.find(key);
+	if (word_map_iter != word_map.end()) {
+		word *reuse_word;
+		reuse_word = word_map_iter->second;
+		printf("*");
+		fflush(stdout);
+		return reuse_word;
+	}
+	return NULL;
 }
 
 vector<sentence *> split_word(utfstring *utfstr)
@@ -105,6 +135,8 @@ vector<sentence *> split_word(utfstring *utfstr)
 	for (int len = (utfstr->length() > 8) ? 8 : utfstr->length(); len > 0; len--) {
 		utfstring *first_utfword = utfstr->substring(0, len);
 		word *first_word = NULL;
+		if (!first_word)
+			first_word = search_word_from_cache(first_utfword);
 		if (!first_word)
 			first_word = check_word(first_utfword, "word_sogou");
 		if (!first_word) {
@@ -128,6 +160,7 @@ vector<sentence *> split_word(utfstring *utfstr)
 			first_word->is_new_char = true;
 		}
 		if (first_word) {
+			add_word_to_cache(first_utfword, first_word);
 			if (utfstr->length() == len) {// Im the last word
 				sentence *parent_sentence = new sentence();
 				parent_sentence->add_word(first_word);
@@ -172,15 +205,16 @@ sentence *get_best_sentence(utfstring *utfstr)
 
 void feedback_word(word *update_word)
 {
+	printf("fb = %s\n", update_word->utfword->c_str());
 	mysql_select_db(&mysql, "corpus");
 	sprintf(query_buf,"select * from word where word.word = '%s' limit 1;", update_word->utfword->c_str());
 	if(mysql_query(&mysql,query_buf)) {
-		fprintf(stderr, "Query failed (%s)\n",mysql_error(&mysql));
+		fprintf(stderr, "feedback_word : Query failed (%s)\n", mysql_error(&mysql));
 		return;
 	}
 	MYSQL_RES *res;
 	if (!(res = mysql_store_result(&mysql))) {
-		fprintf(stderr, "Couldn't get result from %s\n", mysql_error(&mysql));
+		fprintf(stderr, "feedback_word : Couldn't get result from %s\n", mysql_error(&mysql));
 		return;
 	}
 	MYSQL_ROW row;
@@ -222,6 +256,7 @@ void use_sentence(utfstring *utfstr)
 	feedback_sentence(best_sentence);
 //	printf("==========================\n");
 	printf("\n");
+	printf("Word Map Size : %d\n", (int)word_map.size());
 }
 
 int main()
