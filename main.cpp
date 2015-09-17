@@ -97,7 +97,8 @@ word *check_word(utfstring *utfword, const char *table)
 //		printf("row[1][2] = %s, %s, %g\n", row[1], row[2], probability);
 		sword = new word(utfword, word_type, probability);
 	}
-	mysql_free_result(res);
+	if (res)
+		mysql_free_result(res);
 	if (!sword) word_map[utfword->c_str()] = sword;
 	return sword;
 }
