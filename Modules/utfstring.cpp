@@ -57,7 +57,8 @@ utfstring *utfstring::substring(int begin, int length)
 
 void utfstring::append(string *str)
 {
-    utfchars.push_back(str);
+    string *append_str = new string(str->c_str());
+    utfchars.push_back(append_str);
 }
 
 utfstring *utfstring::at(int index)
