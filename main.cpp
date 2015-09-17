@@ -187,6 +187,10 @@ vector<sentence *> split_word(utfstring *utfstr)
 
 sentence *get_best_sentence(utfstring *utfstr)
 {
+	for (map<string, word *>::iterator word_map_it = word_map.begin(); word_map_it != word_map.end(); word_map_it ++) {
+		if (word_map_it->second)
+			delete(word_map_it->second);
+	}
 	word_map.clear();
 	printf("==============================\n\n");
 	printf("Checking : %s\n", utfstr->c_str());
@@ -211,7 +215,7 @@ sentence *get_best_sentence(utfstring *utfstr)
 
 void feedback_word(word *update_word)
 {
-	//printf("fb = %s\n", update_word->utfword->c_str());
+//	printf("fb = %s\n", update_word->utfword->c_str());
 	mysql_select_db(&mysql, "corpus");
 	sprintf(query_buf,"select * from word where word.word = '%s' limit 1;", update_word->utfword->c_str());
 	if(mysql_query(&mysql,query_buf)) {
