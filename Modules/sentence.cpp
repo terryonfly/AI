@@ -11,11 +11,6 @@ sentence::sentence()
 
 }
 
-sentence::~sentence()
-{
-
-}
-
 void sentence::add_word(word *a_word)
 {
     words.push_back(a_word);
@@ -61,4 +56,9 @@ double sentence::get_score()
         if (words[i]->word_probability > 0) score *= words[i]->word_probability;
     }
     return score;
+}
+
+sentence::~sentence()
+{
+
 }

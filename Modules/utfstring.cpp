@@ -25,14 +25,6 @@ utfstring::utfstring(const char *str)
     }
 }
 
-utfstring::~utfstring()
-{
-    for (int j = 0; j < utfchars.size(); j++) {
-        delete(utfchars[j]);
-    }
-    utfchars.clear();
-}
-
 const char *utfstring::c_str()
 {
     string *c_str = new string();
@@ -75,4 +67,12 @@ utfstring *utfstring::at(int index)
 unsigned long utfstring::length()
 {
     return utfchars.size();
+}
+
+utfstring::~utfstring()
+{
+    for (int j = 0; j < utfchars.size(); j++) {
+        delete(utfchars[j]);
+    }
+    utfchars.clear();
 }

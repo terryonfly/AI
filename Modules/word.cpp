@@ -27,6 +27,6 @@ word::word(utfstring *a_utfword, char *a_word_type, double a_word_probability)
 
 word::~word()
 {
-    delete(utfword);
-    delete(word_type);
+//    delete(utfword);
+//    delete(word_type);
 }

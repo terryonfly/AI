@@ -22,8 +22,6 @@ public:
 
     utfstring(const char *str);
 
-    ~utfstring();
-
     const char *c_str();
 
     utfstring *substring(int begin, int length);
@@ -33,6 +31,8 @@ public:
     utfstring *at(int index);
 
     unsigned long length();
+
+    ~utfstring();
 };
 
 

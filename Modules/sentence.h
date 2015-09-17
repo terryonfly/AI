@@ -21,8 +21,6 @@ public:
 
     sentence();
 
-    ~sentence();
-
     void add_word(word *a_word);
 
     void add_sentence(sentence *a_sentence);
@@ -34,6 +32,8 @@ public:
     const char *c_str();
 
     double get_score();
+
+    ~sentence();
 
 };
 
