@@ -113,7 +113,7 @@ void add_word_to_cache(utfstring *utfword, word *a_word)
 	}
 }
 
-word *search_word_from_cache(utfstring *utfword)
+word *search_word_from_cache(utfstring *utfword, bool *found)
 {
 	map<string, word *>::iterator word_map_iter;
 	string key(utfword->c_str());
@@ -123,8 +123,10 @@ word *search_word_from_cache(utfstring *utfword)
 		reuse_word = word_map_iter->second;
 		printf("*");
 		fflush(stdout);
+		*found = true;
 		return reuse_word;
 	}
+	*found = false;
 	return NULL;
 }
 
@@ -132,11 +134,13 @@ vector<sentence *> split_word(utfstring *utfstr)
 {
 	vector<sentence *> sentences;
 	bool is_single_word = true;
-	for (int len = (utfstr->length() > 8) ? 8 : utfstr->length(); len > 0; len--) {
+	for (int len = (utfstr->length() > 10) ? 10 : utfstr->length(); len > 0; len--) {
 		utfstring *first_utfword = utfstr->substring(0, len);
 		word *first_word = NULL;
+		bool found;
 		if (!first_word)
-			first_word = search_word_from_cache(first_utfword);
+			first_word = search_word_from_cache(first_utfword, &found);
+	if (!found) {
 		if (!first_word)
 			first_word = check_word(first_utfword, "word_sogou");
 		if (!first_word) {
@@ -159,8 +163,9 @@ vector<sentence *> split_word(utfstring *utfstr)
 			first_word = new word(first_utfword);
 			first_word->is_new_char = true;
 		}
+		add_word_to_cache(first_utfword, first_word);
+	}
 		if (first_word) {
-			add_word_to_cache(first_utfword, first_word);
 			if (utfstr->length() == len) {// Im the last word
 				sentence *parent_sentence = new sentence();
 				parent_sentence->add_word(first_word);
@@ -182,6 +187,7 @@ vector<sentence *> split_word(utfstring *utfstr)
 
 sentence *get_best_sentence(utfstring *utfstr)
 {
+	word_map.clear();
 	printf("==============================\n\n");
 	printf("Checking : %s\n", utfstr->c_str());
 	printf("Proccessing");
@@ -205,7 +211,7 @@ sentence *get_best_sentence(utfstring *utfstr)
 
 void feedback_word(word *update_word)
 {
-	printf("fb = %s\n", update_word->utfword->c_str());
+	//printf("fb = %s\n", update_word->utfword->c_str());
 	mysql_select_db(&mysql, "corpus");
 	sprintf(query_buf,"select * from word where word.word = '%s' limit 1;", update_word->utfword->c_str());
 	if(mysql_query(&mysql,query_buf)) {
