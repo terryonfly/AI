@@ -25,6 +25,8 @@ public:
 
     void add_sentence(sentence *a_sentence);
 
+    sentence *copy();
+
     unsigned long length();
 
     word *at(int index);

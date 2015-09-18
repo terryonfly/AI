@@ -11,7 +11,7 @@ using namespace std;
 word::word(utfstring *a_utfword)
 {
     utfword = new utfstring(a_utfword->c_str());
-    word_type = new char(0);
+    word_type = new char(8);
     is_new_char = false;
     word_probability = 0;
 }

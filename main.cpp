@@ -88,7 +88,7 @@ word *check_word(utfstring *utfword, const char *table)
 	}
 	MYSQL_ROW row;
 	word *sword = NULL;
-	while ((row = mysql_fetch_row(res))) {
+	if ((row = mysql_fetch_row(res))) {
 		char *szOrbits = row[4];
 		char* pEnd;
 		double probability;
@@ -99,7 +99,6 @@ word *check_word(utfstring *utfword, const char *table)
 	}
 	if (res)
 		mysql_free_result(res);
-	if (!sword) word_map[utfword->c_str()] = sword;
 	return sword;
 }
 
@@ -120,9 +119,10 @@ word *search_word_from_cache(utfstring *utfword, bool *found)
 	string key(utfword->c_str());
 	word_map_iter = word_map.find(key);
 	if (word_map_iter != word_map.end()) {
-		word *reuse_word;
-		reuse_word = word_map_iter->second;
-		printf("*");
+		word *reuse_word = NULL;
+		if (word_map_iter->second)
+			reuse_word = new word(word_map_iter->second->utfword, word_map_iter->second->word_type, word_map_iter->second->word_probability);
+		printf("o");
 		fflush(stdout);
 		*found = true;
 		return reuse_word;
@@ -136,9 +136,12 @@ vector<sentence *> split_word(utfstring *utfstr)
 	vector<sentence *> sentences;
 	bool is_single_word = true;
 	for (int len = (utfstr->length() > 10) ? 10 : utfstr->length(); len > 0; len--) {
+		printf("\n%d", len);
 		utfstring *first_utfword = utfstr->substring(0, len);
 		word *first_word = NULL;
 		bool found;
+		printf("-%s", first_utfword->c_str());
+		fflush(stdout);
 		if (!first_word)
 			first_word = search_word_from_cache(first_utfword, &found);
 	if (!found) {
@@ -152,6 +155,7 @@ vector<sentence *> split_word(utfstring *utfstr)
 				word *pre_first_word = check_word(first_utfword, "word_cn");
 				if (pre_first_word) {
 //					printf("found\n");
+					delete(first_word);
 					first_word = pre_first_word;
 				} else {
 //					printf("not found\n");
@@ -164,25 +168,64 @@ vector<sentence *> split_word(utfstring *utfstr)
 			first_word = new word(first_utfword);
 			first_word->is_new_char = true;
 		}
+		printf("+");
+		fflush(stdout);
 		add_word_to_cache(first_utfword, first_word);
 	}
 		if (first_word) {
-			if (utfstr->length() == len) {// Im the last word
+			printf("S");
+			fflush(stdout);
+			if (utfstr->length() == len) {// Im the last wordi
+				printf("Y");
+				fflush(stdout);
 				sentence *parent_sentence = new sentence();
 				parent_sentence->add_word(first_word);
+				delete(first_word);
+				first_word = NULL;
 				sentences.push_back(parent_sentence);
 			} else {
+				printf("N");
+				fflush(stdout);
 				utfstring *substr = utfstr->substring(len, utfstr->length() - len);
 				vector<sentence *> sub_sentences = split_word(substr);
+				printf("\nC");
+				fflush(stdout);
+				printf(" = %d ", (int)sub_sentences.size());
+				fflush(stdout);
 				for (int i = 0; i < sub_sentences.size(); i++) {
+					printf("X1 ");
+					fflush(stdout);
 					sentence *parent_sentence = new sentence();
+					printf("X2 ");
+					fflush(stdout);
 					parent_sentence->add_word(first_word);
+					printf("X3 ");
+					fflush(stdout);
 					parent_sentence->add_sentence(sub_sentences[i]);
+					printf("X4 ");
+					fflush(stdout);
+					//delete(sub_sentences[i]);
+					printf("X5 ");
+					fflush(stdout);
+					//sub_sentences[i] = NULL;
+					printf("X6 ");
+					fflush(stdout);
 					sentences.push_back(parent_sentence);
+					printf("X7 ");
+					fflush(stdout);
 				}
+				printf("R ");
+				fflush(stdout);
+				//delete(first_word);
+				//first_word = NULL;
+				sub_sentences.clear();
 			}
 		}
+		printf("E%d ", len);
+		fflush(stdout);
 	}
+	printf("T ");
+	fflush(stdout);
 	return sentences;
 }
 
@@ -198,19 +241,23 @@ sentence *get_best_sentence(utfstring *utfstr)
 	printf("Proccessing");
 	fflush(stdout);
 	vector<sentence *> sentences = split_word(utfstr);
-	printf("\n");
+	printf("d\n");
 //	printf("has split %d sentences\n", (int) sentences.size());
-	sentence *best_sentence = NULL;
+	sentence *best_sentence = new sentence();
 	for (int i = 0; i < sentences.size(); i++) {
 //		printf("- %s\n", sentences[i]->c_str());
-		if (!best_sentence) {
-			best_sentence = sentences[i];
+		if (best_sentence->length() == 0) {
+			delete(best_sentence);
+			best_sentence = sentences[i]->copy();
 		} else {
 			if (best_sentence->get_score() < sentences[i]->get_score()) {
-				best_sentence = sentences[i];
+				delete(best_sentence);
+				best_sentence = sentences[i]->copy();
 			}
 		}
+		delete(sentences[i]);
 	}
+	sentences.clear();
 	return best_sentence;
 }
 
@@ -265,6 +312,7 @@ void use_sentence(utfstring *utfstr)
 	printf("%s\n", best_sentence->c_str());
 //	printf("======== feedback ========\n");
 	feedback_sentence(best_sentence);
+	delete(best_sentence);
 //	printf("==========================\n");
 	printf("\n");
 	printf("Word Map Size : %d\n", (int)word_map.size());
@@ -300,9 +348,10 @@ int main()
 		if ((signed char)read_buffer[i] < 0) {
 			char zh_char[3] = {read_buffer[i++], read_buffer[i++], read_buffer[i++]};
 			if (is_end_zh_symbol(zh_char[0], zh_char[1], zh_char[2])) {
-				if (!sentence.empty()) {
+				if (!sentence.empty() && i > 2729) {
 					utfstring *utfstr = new utfstring(sentence.c_str());
 					use_sentence(utfstr);
+					printf("done byte : %d/%d %f%%\n", i, 11664761, i * 100.00000000 / 11664761.00000000);
 					delete(utfstr);
 				}
 				sentence = "";
@@ -314,9 +363,10 @@ int main()
 		} else {
 			char en_char = read_buffer[i++];
 			if (is_end_en_symbol(en_char)) {
-				if (!sentence.empty()) {
+				if (!sentence.empty() && i > 2729) {
 					utfstring *utfstr = new utfstring(sentence.c_str());
 					use_sentence(utfstr);
+					printf("done byte : %d/%d %f%%\n", i, 11664761, i * 100.00000000 / 11664761.00000000);
 					delete(utfstr);
 				}
 				sentence = "";

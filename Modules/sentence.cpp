@@ -13,14 +13,22 @@ sentence::sentence()
 
 void sentence::add_word(word *a_word)
 {
-    words.push_back(a_word);
+    word *sword = new word(a_word->utfword, a_word->word_type, a_word->word_probability);
+    words.push_back(sword);
 }
 
 void sentence::add_sentence(sentence *a_sentence)
 {
     for (int i = 0; i < a_sentence->words.size(); i++) {
-        words.push_back(a_sentence->words[i]);
+	add_word(a_sentence->words[i]);
     }
+}
+
+sentence *sentence::copy()
+{
+    sentence *n_sentence = new sentence();
+    n_sentence->add_sentence(this);
+    return n_sentence;
 }
 
 unsigned long sentence::length()
@@ -60,5 +68,9 @@ double sentence::get_score()
 
 sentence::~sentence()
 {
-
+    for (int i = 0; i < words.size(); i++) {
+        delete(words[i]);
+    }
+    words.clear();
 }
+
